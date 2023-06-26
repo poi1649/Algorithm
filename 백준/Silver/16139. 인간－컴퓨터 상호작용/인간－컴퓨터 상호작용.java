@@ -1,7 +1,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
+import java.util.StringTokenizer;
 
 public class Main {
 
@@ -20,10 +20,10 @@ public class Main {
         final StringBuilder sb = new StringBuilder();
         final int q = Integer.parseInt(br.readLine());
         for (int i = 0; i < q; i++) {
-            final String[] s = br.readLine().split(" ");
-            final char c = s[0].charAt(0);
-            final int start = Integer.parseInt(s[1]);
-            final int end = Integer.parseInt(s[2]);
+            final StringTokenizer st = new StringTokenizer(br.readLine());
+            final char c = st.nextToken().charAt(0);
+            final int start = Integer.parseInt(st.nextToken());
+            final int end = Integer.parseInt(st.nextToken());
 
             if (start == 0) {
                 sb.append(alphabets[end][c - 'a']).append(System.lineSeparator());
@@ -33,7 +33,7 @@ public class Main {
             sb.append(result).append(System.lineSeparator());
         }
 
-        System.out.print(sb);
+        System.out.println(sb);
         br.close();
     }
 }
