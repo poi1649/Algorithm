@@ -17,21 +17,13 @@ public class Main {
             final int[] target = new int[2];
             target[0] = Integer.parseInt(br.readLine());
             target[1] = 1;
-            while (!stack.isEmpty() && stack.peek()[0] < target[0]) {
-                stack.pop();
-                result++;
+            while (!stack.isEmpty() && stack.peek()[0] <= target[0]) {
+                final int[] pop = stack.pop();
+                result += pop[1];
+                if (pop[0] == target[0]) target[1] += pop[1];
             }
             if (!stack.isEmpty()) {
-                if (stack.peek()[0] == target[0]) {
-                    result += stack.peek()[1];
-                    target[1] = stack.peek()[1] + 1;
-                    if (stack.size() > stack.peek()[1]) {
-                        result++;
-                    }
-                }
-                else {
-                    result++;
-                }
+                result++;
             }
             stack.push(target);
         }
