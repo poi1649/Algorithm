@@ -19,6 +19,7 @@ public class Main {
 
         final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int T = Integer.parseInt(br.readLine());
+        final StringBuilder sb = new StringBuilder();
 
         for (int TIME = 0; TIME < T; TIME++) {
             final String[] s0 = br.readLine().split(" ");
@@ -69,8 +70,10 @@ public class Main {
                     result.add(candidate);
                 }
             }
-            System.out.println(result.stream().map(String::valueOf).collect(Collectors.joining(" ")));
+            final String results = result.stream().map(String::valueOf).collect(Collectors.joining(" "));
+            sb.append(results).append(System.lineSeparator());
         } // 각 테스트 케이스
+        System.out.print(sb);
         br.close();
     } // void main
 
