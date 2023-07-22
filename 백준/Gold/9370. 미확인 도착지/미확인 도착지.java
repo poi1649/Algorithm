@@ -1,106 +1,116 @@
-import java.io.*;
-import java.util.*;
- 
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.PriorityQueue;
+import java.util.StringTokenizer;
+import java.util.stream.Collectors;
+
 public class Main {
- 
-    private static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    private static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-    private static final int INF = 100_000_000;
-    private static int T;
-    private static int V, E, t;
-    private static List<List<Node>> list;
-    private static int dist[];
-    private static List<Integer> candidate;
- 
-    static class Node implements Comparable<Node> {
- 
-        int v, weight;
- 
-        public Node(int v, int weight) {
-            this.v = v;
-            this.weight = weight;
-        }
- 
-        @Override
-        public int compareTo(Node o) {
-            return weight - o.weight;
-        }
-    }
- 
+
+    static ArrayList<Node>[] graph;
+    static int[] candidates;
+    static int[] dist;
+    static int n;
+
     public static void main(String[] args) throws IOException {
-        T = Integer.parseInt(br.readLine());
- 
-        for (int i = 0; i < T; i++) {
-            StringTokenizer st = new StringTokenizer(br.readLine());
-            V = Integer.parseInt(st.nextToken());
-            E = Integer.parseInt(st.nextToken());
-            t = Integer.parseInt(st.nextToken());
- 
-            dist = new int[V + 1];
-            Arrays.fill(dist, INF);
- 
-            list = new ArrayList<>();
-            for (int j = 0; j < V + 1; j++)
-                list.add(new ArrayList<>());
- 
-            st = new StringTokenizer(br.readLine());
-            int start = Integer.parseInt(st.nextToken());
-            int g = Integer.parseInt(st.nextToken());
-            int h = Integer.parseInt(st.nextToken());
- 
-            for (int j = 0; j < E; j++) {
-                st = new StringTokenizer(br.readLine());
-                int u = Integer.parseInt(st.nextToken());
-                int v = Integer.parseInt(st.nextToken());
-                int weight = Integer.parseInt(st.nextToken());
- 
-                if ((u == g && v == h) || (u == h && v == g)) {
-                    list.get(u).add(new Node(v, weight * 2 - 1));
-                    list.get(v).add(new Node(u, weight * 2 - 1));
+
+        final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int T = Integer.parseInt(br.readLine());
+
+        for (int TIME = 0; TIME < T; TIME++) {
+            final String[] s0 = br.readLine().split(" ");
+            n = Integer.parseInt(s0[0]);
+            final int m = Integer.parseInt(s0[1]);
+            final int t = Integer.parseInt(s0[2]);
+            dist = new int[n + 1];
+            Arrays.fill(dist, (Integer.MAX_VALUE / 2) * 2);
+
+            graph = new ArrayList[n + 1];
+            for (int i = 0; i < graph.length; i++) {
+                graph[i] = new ArrayList<>();
+            }
+
+            final String[] s1 = br.readLine().split(" ");
+            final int s = Integer.parseInt(s1[0]);
+            final int g = Integer.parseInt(s1[1]);
+            final int h = Integer.parseInt(s1[2]);
+
+            for (int i = 0; i < m; i++) {
+                final StringTokenizer st = new StringTokenizer(br.readLine());
+                int a = Integer.parseInt(st.nextToken());
+                int b = Integer.parseInt(st.nextToken());
+                int w = Integer.parseInt(st.nextToken());
+                if ((a == g && b == h) || (a == h && b == g)) {
+                    graph[a].add(new Node(b, w * 2 - 1));
+                    graph[b].add(new Node(a, w * 2 - 1));
                 } else {
-                    list.get(u).add(new Node(v, weight * 2));
-                    list.get(v).add(new Node(u, weight * 2));
+                    graph[a].add(new Node(b, w * 2));
+                    graph[b].add(new Node(a, w * 2));
                 }
             }
- 
-            // 목적지 후보를 저장한다.
-            candidate = new ArrayList<>();
-            for (int j = 0; j < t; j++)
-                candidate.add(Integer.parseInt(br.readLine()));
- 
-            dijkstra(start);
- 
-            Collections.sort(candidate);
- 
-            for (int num : candidate) {
-                if (dist[num] % 2 == 1) bw.write(num + " ");
+
+            candidates = new int[t];
+            for (int j = 0; j < t; j++) {
+                final String string = br.readLine();
+                candidates[j] = Integer.parseInt(string);
             }
-            bw.write("\n");
-        }
- 
+
+            dijkstra(s);
+
+            final ArrayList<Integer> result = new ArrayList<>();
+
+            Arrays.sort(candidates);
+
+            for (int candidate : candidates) {
+                if (dist[candidate] % 2 == 1) {
+                    result.add(candidate);
+                }
+            }
+            System.out.println(result.stream().map(String::valueOf).collect(Collectors.joining(" ")));
+        } // 각 테스트 케이스
         br.close();
-        bw.close();
-    }
- 
+    } // void main
+
     private static void dijkstra(int u) {
-        boolean[] visited = new boolean[V + 1];
+        boolean[] visited = new boolean[n + 1];
         PriorityQueue<Node> pq = new PriorityQueue<>();
- 
+
         dist[u] = 0;
         pq.add(new Node(u, 0));
- 
+
         while (!pq.isEmpty()) {
             Node currentNode = pq.poll();
- 
-            if (visited[currentNode.v]) continue;
-            visited[currentNode.v] = true;
- 
-            for (Node node : list.get(currentNode.v)) {
-                if (!visited[node.v] && dist[node.v] > dist[currentNode.v] + node.weight) {
-                    dist[node.v] = dist[currentNode.v] + node.weight;
-                    pq.add(new Node(node.v, dist[node.v]));
+
+            if (visited[currentNode.number]) {
+                continue;
+            }
+            visited[currentNode.number] = true;
+
+            for (Node node : graph[currentNode.number]) {
+                if (!visited[node.number] && dist[node.number] > dist[currentNode.number] + node.weight) {
+                    dist[node.number] = dist[currentNode.number] + node.weight;
+                    pq.add(new Node(node.number, dist[node.number]));
                 }
             }
         }
     }
 }
+
+class Node implements Comparable<Node> {
+    int number;
+    int weight;
+
+    public Node(int number, int weight) {
+        this.number = number;
+        this.weight = weight;
+    }
+
+    @Override
+    public int compareTo(Node o) {
+        return weight - o.weight;
+    }
+}
+
