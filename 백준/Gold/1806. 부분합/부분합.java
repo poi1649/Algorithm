@@ -17,36 +17,22 @@ public class Main {
         final int[] ints = Arrays.stream(br.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
 
         int i = 0;
-        int j = 0;
+        int j = 1;
         int sum = ints[i];
         int result = Integer.MAX_VALUE;
-        boolean iMoved = false;
-        boolean jMoved = false;
-        while (i <= j) {
-            if (iMoved) {
-                sum -= ints[i - 1];
+
+        while (i <= j && j <= n) {
+            if (sum >= s) {
+                result = Math.min(result, j - i);
+                sum -= ints[i++];
+                continue;
             }
-            if (jMoved) {
+            if (j < n) {
                 sum += ints[j];
             }
-
-            if (sum >= s) {
-                result = Math.min(result, j - i + 1);
-                i++;
-                iMoved = true;
-                jMoved = false;
-                continue;
-            }
-            if (j < n -1) {
-                j++;
-                iMoved = false;
-                jMoved = true;
-                continue;
-            }
-            i++;
-            iMoved = true;
-            jMoved = false;
+            j++;
         }
+
         if (result == Integer.MAX_VALUE) {
             System.out.println(0);
             return;
