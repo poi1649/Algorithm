@@ -4,6 +4,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.stream.Collectors;
@@ -15,8 +17,6 @@ public class Main {
     static int[][] middle;
     static int n;
     static int m;
-    static ArrayList<Node>[] graph;
-    static PriorityQueue<Node> deque = new PriorityQueue<>();
     static StringBuilder sb = new StringBuilder();
 
     public static void main(String[] args) throws IOException {
@@ -65,47 +65,31 @@ public class Main {
 
         System.out.print(sb);
         sb = new StringBuilder();
+        final Deque<Integer> path = new LinkedList<>();
         for (int i = 1; i <= n; i++) {
             for (int j = 1; j <= n; j++) {
                 if (i == j || shortest[i][j] == INF) {
                     sb.append(0).append(System.lineSeparator());
                     continue;
                 }
-                final List<Integer> path = findPath(i, j);
-                path.add(0, i);
-                path.add(j);
-                path.add(0, path.size());
-                sb.append(path.stream().map(String::valueOf).collect(Collectors.joining(" "))).append(System.lineSeparator());
+                findPath(i, j, path);
+                sb.append(path.size()).append(" ");
+                path.forEach(integer -> sb.append(integer).append(" "));
+                sb.append(System.lineSeparator());
+                path.clear();
             }
         }
         System.out.print(sb);
     }
 
-    static List<Integer> findPath(int start, int end) {
+    static void findPath(int start, int end, Deque<Integer> deque) {
         if (middle[start][end] == 0) {
-            return new ArrayList<>();
+            deque.add(start);
+            deque.add(end);
+            return;
         }
-        final ArrayList<Integer> list = new ArrayList<>(findPath(start, middle[start][end]));
-        list.add(middle[start][end]);
-        list.addAll(findPath(middle[start][end], end));
-
-        return list;
-    }
-
-}
-
-class Node implements Comparable<Node> {
-
-    int number;
-    long weight;
-
-    public Node(int number, long weight) {
-        this.number = number;
-        this.weight = weight;
-    }
-
-    @Override
-    public int compareTo(Node o) {
-        return Long.compare(this.weight, o.weight);
+        findPath(start, middle[start][end], deque);
+        deque.pollLast();
+        findPath(middle[start][end], end, deque);
     }
 }
