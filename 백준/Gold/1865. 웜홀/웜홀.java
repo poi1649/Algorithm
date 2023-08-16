@@ -24,11 +24,11 @@ public class Main {
             m = parseInt(st[1]);
             w = parseInt(st[2]);
 
-            graph = new ArrayList[n + 1];
-            cost = new int[n + 1];
-            visited = new boolean[n + 1];
+            graph = new ArrayList[n + 2];
+            cost = new int[n + 2];
+            visited = new boolean[n + 2];
 
-            for (int i = 1; i <= n; i++) {
+            for (int i = 1; i <= n + 1; i++) {
                 graph[i] = new ArrayList<>();
             }
             for (int i = 0; i < m; i++) {
@@ -47,14 +47,21 @@ public class Main {
                 graph[s].add(new Node3(e, -c));
             }
             boolean isCycle = false;
-            Arrays.fill(cost, INF);
-
             for (int i = 1; i <= n; i++) {
-                for (int j = 1; j <= n; j++) {
+                graph[n + 1].add(new Node3(i, 0));
+            }
+            Arrays.fill(cost, INF);
+            cost[n + 1] = 0;
+
+            for (int i = 1; i <= n + 1; i++) {
+                for (int j = n + 1; j >= 1; j--) {
+                    if (cost[j] == INF) {
+                        continue;
+                    }
                     for (Node3 node3 : graph[j]) {
                         if (cost[node3.index] > cost[j] + node3.cost) {
                             cost[node3.index] = cost[j] + node3.cost;
-                            if (i == n) {
+                            if (i == n + 1) {
                                 isCycle = true;
                             }
                         }
