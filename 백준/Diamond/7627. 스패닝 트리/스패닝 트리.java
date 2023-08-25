@@ -1,16 +1,14 @@
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Scanner;
 
 public class Main {
 
     private static final int mod = 1000003;
     private static int[] p = new int[200005];
-    private static List<List<Integer>> s = new ArrayList<>();
-    private static List<List<Integer>> E = new ArrayList<>();
+    private static final List<List<Integer>> s = new ArrayList<>();
+    private static final List<Edge> sameWeightEdges = new ArrayList<>();
 
     public static void main(String[] args) throws Exception {
         Arrays.fill(p, -1);
@@ -19,22 +17,22 @@ public class Main {
         int n = scanner.nextInt();
         int m = scanner.nextInt();
 
-        List<List<Integer>> edge = new ArrayList<>();
+        List<Edge> edge = new ArrayList<>();
         for (int i = 1; i <= m; i++) {
             int a = scanner.nextInt();
             int b = scanner.nextInt();
             int w = scanner.nextInt();
-            edge.add(Arrays.asList(w, a, b));
+            edge.add(new Edge(a, b, w));
         }
 
-        edge.sort((o1, o2) -> o2.get(0) - o1.get(0));
+        edge.sort((o1, o2) -> o2.weight - o1.weight);
 
         long ans = 1;
         while (!edge.isEmpty()) {
-            E.clear();
-            E.add(edge.remove(edge.size() - 1));
-            while (!edge.isEmpty() && Objects.equals(edge.get(edge.size() - 1).get(0), E.get(0).get(0))) {
-                E.add(edge.remove(edge.size() - 1));
+            sameWeightEdges.clear();
+            sameWeightEdges.add(edge.remove(edge.size() - 1));
+            while (!edge.isEmpty() && edge.get(edge.size() - 1).weight == sameWeightEdges.get(0).weight) {
+                sameWeightEdges.add(edge.remove(edge.size() - 1));
             }
             ans *= solve();
             ans %= mod;
@@ -78,31 +76,44 @@ public class Main {
 
     private static int solve() {
         int diff = 0;
-        for (List<Integer> it : E) {
-            diff += merge(it.get(1), it.get(2)) ? 1 : 0;
+        for (Edge edge : sameWeightEdges) {
+            diff += merge(edge.from, edge.to) ? 1 : 0;
         }
         for (int i = 0; i < diff; i++) {
             roll_back();
         }
-        int ret = 0;
-        for (int i = 0; i < (1 << E.size()); i++) {
+        int result = 0;
+        for (int i = 0; i < (1 << sameWeightEdges.size()); i++) {
             if (Integer.bitCount(i) != diff) {
                 continue;
             }
             int cnt = 0;
-            for (int j = 0; j < E.size(); j++) {
+            for (int j = 0; j < sameWeightEdges.size(); j++) {
                 if ((i & (1 << j)) != 0) {
-                    cnt += merge(E.get(j).get(1), E.get(j).get(2)) ? 1 : 0;
+                    cnt += merge(sameWeightEdges.get(j).from, sameWeightEdges.get(j).to) ? 1 : 0;
                 }
             }
-            ret += (cnt == diff) ? 1 : 0;
+            result += (cnt == diff) ? 1 : 0;
             for (int j = 0; j < cnt; j++) {
                 roll_back();
             }
         }
-        for (List<Integer> it : E) {
-            merge(it.get(1), it.get(2));
+        for (Edge edge : sameWeightEdges) {
+            merge(edge.from, edge.to);
         }
-        return ret;
+        return result;
+    }
+}
+
+class Edge {
+
+    int from;
+    int to;
+    int weight;
+
+    Edge(int from, int to, int weight) {
+        this.from = from;
+        this.to = to;
+        this.weight = weight;
     }
 }
