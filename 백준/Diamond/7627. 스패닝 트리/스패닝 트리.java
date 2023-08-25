@@ -1,3 +1,6 @@
+import static java.lang.Integer.parseInt;
+
+import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,31 +16,31 @@ public class Main {
     public static void main(String[] args) throws Exception {
         Arrays.fill(parents, -1);
 
-        Scanner scanner = new Scanner(System.in);
-        int n = scanner.nextInt();
-        int m = scanner.nextInt();
+        BufferedReader reader = new BufferedReader(new java.io.InputStreamReader(System.in));
+        int m = parseInt(reader.readLine().split(" ")[1]);
 
         List<Edge> edge = new ArrayList<>();
         for (int i = 1; i <= m; i++) {
-            int a = scanner.nextInt();
-            int b = scanner.nextInt();
-            int w = scanner.nextInt();
+            String[] line = reader.readLine().split(" ");
+            int a = parseInt(line[0]);
+            int b = parseInt(line[1]);
+            int w = parseInt(line[2]);
             edge.add(new Edge(a, b, w));
         }
 
         edge.sort((o1, o2) -> o2.weight - o1.weight);
 
-        long ans = 1;
+        long result = 1;
         while (!edge.isEmpty()) {
             sameWeightEdges.clear();
             sameWeightEdges.add(edge.remove(edge.size() - 1));
             while (!edge.isEmpty() && edge.get(edge.size() - 1).weight == sameWeightEdges.get(0).weight) {
                 sameWeightEdges.add(edge.remove(edge.size() - 1));
             }
-            ans *= solve();
-            ans %= mod;
+            result *= solve();
+            result %= mod;
         }
-        System.out.println(ans);
+        System.out.println(result);
     }
 
     private static int f(int a) {
@@ -120,9 +123,9 @@ class Edge {
 
 class Node {
     int a;
-    int b; 
+    int b;
     int parent;
-    
+
     Node(int a, int b, int parent) {
         this.a = a;
         this.b = b;
