@@ -6,12 +6,12 @@ import java.util.Scanner;
 public class Main {
 
     private static final int mod = 1000003;
-    private static int[] p = new int[200005];
-    private static final List<List<Integer>> s = new ArrayList<>();
+    private static int[] parents = new int[200005];
+    private static final List<Node> rollbackList = new ArrayList<>();
     private static final List<Edge> sameWeightEdges = new ArrayList<>();
 
     public static void main(String[] args) throws Exception {
-        Arrays.fill(p, -1);
+        Arrays.fill(parents, -1);
 
         Scanner scanner = new Scanner(System.in);
         int n = scanner.nextInt();
@@ -41,37 +41,37 @@ public class Main {
     }
 
     private static int f(int a) {
-        if (p[a] < 0) {
+        if (parents[a] < 0) {
             return a;
         }
-        return f(p[a]);
+        return f(parents[a]);
     }
 
     private static boolean merge(int a, int b) {
         a = f(a);
         b = f(b);
         if (a != b) {
-            if (-p[a] > -p[b]) {
-                p[a] += p[b];
-                s.add(Arrays.asList(b, a, p[b]));
-                p[b] = a;
+            if (-parents[a] > -parents[b]) {
+                parents[a] += parents[b];
+                rollbackList.add(new Node(b, a, parents[b]));
+                parents[b] = a;
             } else {
-                p[b] += p[a];
-                s.add(Arrays.asList(a, b, p[a]));
-                p[a] = b;
+                parents[b] += parents[a];
+                rollbackList.add(new Node(a, b, parents[a]));
+                parents[a] = b;
             }
             return true;
         }
         return false;
     }
 
-    private static void roll_back() {
-        List<Integer> last = s.remove(s.size() - 1);
-        int a = last.get(0);
-        int b = last.get(1);
-        int sz = last.get(2);
-        p[b] -= sz;
-        p[a] = sz;
+    private static void rollBack() {
+        Node last = rollbackList.remove(rollbackList.size() - 1);
+        int a = last.a;
+        int b = last.b;
+        int parent = last.parent;
+        parents[b] -= parent;
+        parents[a] = parent;
     }
 
     private static int solve() {
@@ -80,7 +80,7 @@ public class Main {
             diff += merge(edge.from, edge.to) ? 1 : 0;
         }
         for (int i = 0; i < diff; i++) {
-            roll_back();
+            rollBack();
         }
         int result = 0;
         for (int i = 0; i < (1 << sameWeightEdges.size()); i++) {
@@ -95,7 +95,7 @@ public class Main {
             }
             result += (cnt == diff) ? 1 : 0;
             for (int j = 0; j < cnt; j++) {
-                roll_back();
+                rollBack();
             }
         }
         for (Edge edge : sameWeightEdges) {
@@ -115,5 +115,17 @@ class Edge {
         this.from = from;
         this.to = to;
         this.weight = weight;
+    }
+}
+
+class Node {
+    int a;
+    int b; 
+    int parent;
+    
+    Node(int a, int b, int parent) {
+        this.a = a;
+        this.b = b;
+        this.parent = parent;
     }
 }
