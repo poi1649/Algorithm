@@ -5,8 +5,6 @@ static const int MAX = 200001;
 using namespace std;
 int t, n, m;
 int tree[MAX];
-map<int, int> y_compress;
-set<int> y_lists;
 
 struct Inputs {
     int type;
@@ -20,7 +18,7 @@ struct Inputs {
 
 };
 
-void activate(int left, int right) {
+void activate(int& left, int& right) {
     left = left + MAX / 2;
     right = right + MAX / 2;
     while (left <= right) {
@@ -37,7 +35,7 @@ void activate(int left, int right) {
     }
 }
 
-void deactivate(int left, int right) {
+void deactivate(int& left, int& right) {
     left = left + MAX / 2;
     right = right + MAX / 2;
     while (left <= right) {
@@ -54,7 +52,7 @@ void deactivate(int left, int right) {
     }
 }
 
-int find_actives(int index) {
+int find_actives(int& index) {
     index = index + MAX / 2;
     int result = 0;
     while (index > 0) {
@@ -83,32 +81,26 @@ int main() {
         for (int i = 0; i < n; i++) {
             int x, y;
             cin >> x >> y;
-            y_lists.insert(y);
             inputs.push_back(Inputs(2, x, y));
         }
         for (int i = 0; i < m; i++) {
             int x, y, xEnd, yEnd;
             cin >> x >> xEnd >> y >> yEnd;
-            y_lists.insert(y);
-            y_lists.insert(yEnd);
             inputs.push_back(Inputs(1, x, y, yEnd));
             inputs.push_back(Inputs(3, xEnd,y, yEnd));
         }
         sort(inputs.begin(), inputs.end(), compare);
         int index = 0;
-        for (auto & y : y_lists) {
-            y_compress[y] = index++;
-        }
         memset(tree, 0, sizeof(tree));
         long long result = 0;
         for (auto & input : inputs) {
             int type = input.type;
             if (type == 1) {
-                activate(y_compress[input.y], y_compress[input.yEnd]);
+                activate(input.y, input.yEnd);
             } else if (type == 2) {
-                result += find_actives(y_compress[input.y]);
+                result += find_actives(input.y);
             } else {
-                deactivate(y_compress[input.y], y_compress[input.yEnd]);
+                deactivate(input.y, input.yEnd);
             }
         }
         cout << result << '\n';
