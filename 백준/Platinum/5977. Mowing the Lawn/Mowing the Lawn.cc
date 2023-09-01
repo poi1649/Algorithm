@@ -1,32 +1,52 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <deque>
 
 using namespace std;
-
 typedef long long ll;
-const int maxn = 4000005;
-ll inputs[maxn], q[maxn], dp[maxn], sum;
-int n, l;
+
+int n, k;
+ll sums[100001];
+ll dp[100001];
+deque<int> dq;
+
+ll find_value(int i) {
+    auto result = dp[i - 1] - sums[i];
+    return result;
+}
 
 int main() {
-    cin >> n >> l;
-    for (int i = 1; i <= n; i++) {
-        cin >> inputs[i];
-        sum += inputs[i];
-    }
-    int head, tail;
-    head = tail = 0;
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
 
-    for (int i = 1; i <= n; i++) {
-        dp[i] = inputs[i] + dp[q[head]];
-        while (head <= tail && i - q[head] > l) head++;
-        while (head <= tail && dp[i] < dp[q[tail]]) tail--;
-        q[++tail] = i;
+    cin >> n >> k;
+
+    int efficiency;
+    cin >> efficiency;
+    sums[1] += efficiency;
+    dp[1] = sums[1];
+    dq.push_back(1);
+
+    for (int i = 2; i <= n; i++) {
+        cin >> efficiency;
+        sums[i] = sums[i - 1] + efficiency;
+
+        while (!dq.empty() && dq.front() + k < i) {
+            dq.pop_front();
+        }
+
+        while (!dq.empty() && find_value(dq.back()) <= find_value(i)) {
+            dq.pop_back();
+        }
+
+        dq.push_back(i);
+        if (i <= k) {
+            dp[i] = sums[i];
+            continue;
+        }
+        dp[i] = sums[i] + find_value(dq.front());
+
     }
 
-    ll mn = dp[n];
-    for (int i = n - l; i <= n; i++) {
-        mn = min(mn, dp[i]);
-    }
-    cout << sum - mn;
+    cout << dp[n];
     return 0;
 }
