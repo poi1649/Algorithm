@@ -43,15 +43,15 @@ int main() {
     }
     cin >> a >> b;
     int l = 0;
-    int r = 1000000000;
-    while (l <= r) {
+    int r = 1000000001;
+    while (l < r) {
         int mid = (l + r) / 2;
         if (can_go(a, b, mid)) {
             l = mid + 1;
         } else {
-            r = mid - 1;
+            r = mid;
         }
     }
-    cout << r << '\n';
+    cout << l - 1 << '\n';
     return 0;
 }
