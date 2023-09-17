@@ -24,10 +24,10 @@ int work[301];
 bool adj_s[301];
 vector<Edge *> edges;
 
-void add_edge(int from, int to, int f) {
-    Edge *e1 = new Edge(from, to, f);
-    edges.push_back(e1); // for memory leak (not important
+void add_edge(int from, int to, int c) {
+    Edge *e1 = new Edge(from, to, c);
     Edge *e2 = new Edge(to, from, 0);
+    edges.push_back(e1);
     e1->rev = e2;
     e2->rev = e1;
     g[from].push_back(e1);
@@ -43,6 +43,7 @@ bool bfs() {
     while (!q.empty()) {
         int x = q.front();
         q.pop();
+        if (x == t) return true;
         for (auto e: g[x]) {
             if (lv[e->to] == -1 && e->remain() > 0) {
                 lv[e->to] = lv[x] + 1;
@@ -116,7 +117,6 @@ void process() {
         separate(i);
         for (int j = 0; j < sz; ++j) {
             auto edge = edges[j];
-//            cout << edge->from << ' ' << edge->to << ' ' << edge->c << ' ' << edge->f << '\n';
             if (isChecked[j]) continue;
             if (edge->c != 0 && edge->remain() == 0 && adj_s[edge->from] ^ adj_s[edge->to]) {
                 result++;
