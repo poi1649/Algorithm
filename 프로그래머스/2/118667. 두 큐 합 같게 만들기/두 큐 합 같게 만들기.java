@@ -13,7 +13,7 @@ class Solution {
         
         int count = 0;
         
-        while (gap != 0 && count <= queue1.length * 4) {
+        while (gap != 0 && count <= queue1.length * 2 + 1) {
             if (gap > 0) {
                 int tmp = qOne.pollFirst();
                 gap -= tmp * 2;
