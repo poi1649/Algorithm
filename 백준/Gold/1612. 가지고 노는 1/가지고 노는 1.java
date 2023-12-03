@@ -24,17 +24,18 @@ public class Main {
     public static void process(BufferedReader br, int cur) throws IOException {
         n = parseInt(br.readLine());
         int prev = 1 % n;
-        for (int i = 1; i < 10000000; i++) {
+        int i = 1;
+        if (n % 2 == 0 || n % 5 == 0) {
+            System.out.println(-1);
+            return;
+        }
+        while (true) {
             if (prev == 0) {
                 System.out.println(i);
                 return;
             }
+            i++;
             prev = (((prev * (10 % n)) % n) + 1) % n;
         }
-        if (prev == 0) {
-            System.out.println(10000000);
-            return;
-        }
-        System.out.println(-1);
     }
 }
