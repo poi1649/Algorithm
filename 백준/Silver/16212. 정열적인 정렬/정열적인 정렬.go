@@ -1,15 +1,17 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"sort"
+	"strconv"
 	"strings"
 )
 
 var n int
 
 func main() {
-	//var n int
 	//fmt.Scan(&n)
 	for i := 1; i <= 1; i++ {
 		solve()
@@ -17,43 +19,19 @@ func main() {
 }
 
 func solve() {
-	fmt.Scan(&n)
-	arr := make([]int, n)
+	reader := bufio.NewReader(os.Stdin)
+	writer := bufio.NewWriter(os.Stdout)
+	s2, _, _ := reader.ReadLine()
+	n, _ = strconv.Atoi(string(s2))
+	arr := make([]int, 0, n)
+
 	for i := 0; i < n; i++ {
-		fmt.Scan(&arr[i])
+		var number int
+		fmt.Fscan(reader, &number)
+		arr = append(arr, number)
 	}
+
 	sort.Ints(arr)
-	// joining array's elements into a string, separated by a space
-	fmt.Println(strings.Trim(fmt.Sprint(arr), "[]"))
-}
-
-type Set struct {
-	data map[int]struct{}
-}
-
-func NewSet() *Set {
-	return &Set{
-		data: make(map[int]struct{}),
-	}
-}
-
-func (s *Set) Add(v int) {
-	s.data[v] = struct{}{}
-}
-
-func (s *Set) Remove(v int) {
-	delete(s.data, v)
-}
-
-func (s *Set) Contains(v int) bool {
-	_, ok := s.data[v]
-	return ok
-}
-
-func (s *Set) Size() int {
-	return len(s.data)
-}
-
-func (s *Set) Clear() {
-	s.data = make(map[int]struct{})
+	writer.WriteString(strings.Trim(fmt.Sprint(arr), "[]"))
+	writer.Flush()
 }
